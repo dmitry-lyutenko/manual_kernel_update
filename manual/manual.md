@@ -1,6 +1,6 @@
 # **Введение**
 
-Все ниже описанные действия производятся на компьютере с установленным `Debian Jessie` и будут воспроизводимы на `Ubuntu` или `Mint`. Если у вас установлена другая ОС, то необходимо самостоятельно внести изменения на некоторых этапах.
+Установка и настройка происходили на компьютере с операционной системе Ubuntu 18.04.2, ядро 5.0.0-32
 
 Для выполнения работы потребуются следующие инструменты:
 
@@ -14,70 +14,61 @@
 - **GitHub** - https://github.com/
 - **Vagrant Cloud** - https://app.vagrantup.com
 
-
 ---
 # **Установка ПО**
 
-### **Vagrant**
-Переходим на https://www.vagrantup.com/downloads.html выбираем соответствующую версию. В данном случае Debian 64-bit и версия 2.2.6. Копируем ссылку и в консоли выполняем:
-
+обновим систему и установим необходимые пакеты:
 ```
-curl -O https://releases.hashicorp.com/vagrant/2.2.6/vagrant_2.2.6_x86_64.deb && \
+apt update && apt upgrade -y
+apt -y install htop mc curl git gcc make perl virtualbox
+```
+
+---
+альтернативная установка VirtualBox (если не получилось apt install)
+curl -O https://download.virtualbox.org/virtualbox/6.0.14/virtualbox-6.0_6.0.14-133895~Debian~buster_amd64.deb && \
+dpkg -i virtualbox-6.0_6.0.14-133895~Debian~buster_amd64.deb
+sudo /sbin/vboxconfig
+
+
+### **Vagrant**
+```
+curl -O https://releases.hashicorp.com/vagrant/2.2.6/vagrant_2.2.6_x86_64.deb
 sudo dpkg -i vagrant_2.2.6_x86_64.deb
 ```
 
-После успешного окончания будет установлен Vagrant.
-
 ### **Packer**
-Переходим на https://www.packer.io/downloads.html выбираем соответствующую версию. В данном случае Linux 64-bit и версия 1.4.4. Копируем ссылку и в консоли выполняем:
-
 ```
-curl https://releases.hashicorp.com/packer/1.4.4/packer_1.4.4_linux_amd64.zip | \
-sudo gzip -d > /usr/local/bin/packer && \
-sudo chmod +x /usr/local/bin/packer
+curl -O https://releases.hashicorp.com/packer/1.4.5/packer_1.4.5_linux_amd64.zip
+unzip packer_1.4.5_linux_amd64.zip
+mv packer /usr/local/bin/
+chmod +x /usr/local/bin/packer
 ```
-
-После успешного окончания будет установлен Packer.
 
 ---
+
 
 # **Kernel update**
 
 ### **Клонирование и запуск**
 
-Для запуска рабочего виртуального окружения необходимо зайти через браузер в GitHub под своей учетной записью и выполнить `fork` данного репозитория: https://github.com/dmitry-lyutenko/manual_kernel_update
+клонируем репозиторий к себе на рабочую машину:
+```
+git clone https://github.com/Vasiliy-G/manual_kernel_update.git
+```
 
-После этого данный репозиторий необходимо склонировать к себе на рабочую машину. Для этого воспользуемся ранее установленным приложением `git`, при этом в `<user_name>` будет имя уже вашего репозитрия:
-```
-git clone git@github.com:<user_name>/manual_kernel_update.git
-```
-В текущей директории появится папка с именем репозитория. В данном случае `manual_kernel_update`. Ознакомимся с содержимым:
+Запустим виртуальную машину:
 ```
 cd manual_kernel_update
-ls -1
-manual
-packer
-Vagrantfile
-```
-Здесь:
-- `manual` - директория с данным руководством
-- `packer` - директория со скриптами для `packer`'а
-- `Vagrantfile` - файл описывающий виртуальную инфраструктуру для `Vagrant`
-
-Запустим виртуальную машину и залогинимся:
-```
 vagrant up
-...
-==> kernel-update: Importing base box 'centos/7'...
-...
-==> kernel-update: Booting VM...
-...
-==> kernel-update: Setting hostname...
-
-vagrant ssh
-[vagrant@kernel-update ~]$ uname -r
-3.10.0-957.12.2.el7.x86_64
 ```
+
+после установки виртуальной машины залогинимся к ней:
+```
+vagrant ssh
+```
+
+
+
 Теперь приступим к обновлению ядра.
 
 ### **kernel update**
@@ -115,10 +106,65 @@ sudo grub2-set-default 0
 sudo reboot
 ```
 
-После перезагрузки виртуальной машины (3-4 минуты, зависит от мощности хостовой машины) заходим в нее и выполняем:
+После перезагрузки виртуальной машины (3-4 минуты, зависит от мощности хостовой машины) заходим в нее и проверим версию ядра:
 
 ```
 uname -r
+```
+
+
+
+---
+# **Собираем своё ядро из исходников**
+
+
+
+
+установим необходимые пакеты:
+```
+yum -y update
+yum install -y ncurses-devel make gcc bc bison flex elfutils-libelf-devel openssl-devel grub2 wget mc htop git nano
+```
+скачиваем ядро с https://www.kernel.org/
+```
+wget https://git.kernel.org/torvalds/t/linux-5.4-rc6.tar.gz
+```
+разархивируем файл:
+```
+tar -xzvf linux-5.4-rc6.tar.gz
+cd linux-5.4-rc6
+```
+копируем содержимое в конфигурационный файл командой:
+```
+cp -v /boot/config-$(uname -r) .config
+```
+запускаем сборку ядра:
+```
+make olddefconfig
+make -j2
+make modules
+make modules_install
+make install
+```
+Обновляем конфигурацию загрузчика:
+```
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+```
+
+Выбираем загрузку с новым ядром по-умолчанию:
+```
+sudo grub2-set-default 0
+```
+
+Перезагружаем виртуальную машину:
+```
+sudo reboot
+```
+
+проверим версию ядра:
+```
+uname -r
+```
 ```
 
 ---
