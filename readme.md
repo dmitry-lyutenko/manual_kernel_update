@@ -1,0 +1,1 @@
+https://app.vagrantup.com/Andrey874/boxes/centos-7-5
