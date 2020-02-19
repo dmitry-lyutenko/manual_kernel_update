@@ -116,5 +116,7 @@ sudo echo "\`blkid | grep HOME | awk '{print $2}'\` /home xfs defaults 0 0" >> /
 
 `sudo mount /home`
 
+![picture](https://github.com/Andrey874/manual_kernel_update/blob/master/HW3/1.jpg)
+
 Ссылка на образ
 https://app.vagrantup.com/Andrey874/boxes/centos-7
