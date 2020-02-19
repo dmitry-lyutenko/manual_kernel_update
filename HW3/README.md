@@ -2,7 +2,7 @@ sudo yum install xfsdump
 
 # 1. уменьшить том / до 8G
 
-sudo pvcreate /dev/sdb  
+`sudo pvcreate /dev/sdb  
 
 sudo vgcreate vg_root /dev/sdb  
 
