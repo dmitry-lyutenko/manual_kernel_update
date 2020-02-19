@@ -1,4 +1,4 @@
-sudo yum install xfsdump\n
+sudo yum install xfsdump
 
 # 1. уменьшить том / до 8G
 
@@ -20,7 +20,7 @@ sudo chroot /mnt/
 
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg  
 
-cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done  
+cd /boot ; for i in "`"ls initramfs-*img"`"; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done  
 
 
 выйти из системы, зайти снова и перезагрузиться
