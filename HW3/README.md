@@ -10,7 +10,9 @@ sudo yum install xfsdump
 
 `sudo mkfs.xfs /dev/vg_root/lv_root`  
 
-`sudo mount /dev/vg_root/lv_root /mnt`  
+`sudo mount /dev/vg_root/lv_root /mnt`
+
+![picture](https://github.com/Andrey874/manual_kernel_update/blob/master/HW3/1.jpg)
 
 `sudo xfsdump -J - /dev/VolGroup00/LogVol00 | sudo xfsrestore -J - /mnt`  
 
@@ -116,7 +118,7 @@ sudo echo "\`blkid | grep HOME | awk '{print $2}'\` /home xfs defaults 0 0" >> /
 
 `sudo mount /home`
 
-![picture](https://github.com/Andrey874/manual_kernel_update/blob/master/HW3/1.jpg)
+
 
 Ссылка на образ
 https://app.vagrantup.com/Andrey874/boxes/centos-7
