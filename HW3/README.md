@@ -4,21 +4,21 @@ sudo yum install xfsdump
 
 `sudo pvcreate /dev/sdb`  
 
-sudo vgcreate vg_root /dev/sdb  
+`sudo vgcreate vg_root /dev/sdb`  
 
-sudo lvcreate -n lv_root -l +100%FREE /dev/vg_root  
+`sudo lvcreate -n lv_root -l +100%FREE /dev/vg_root`
 
-sudo mkfs.xfs /dev/vg_root/lv_root  
+`sudo mkfs.xfs /dev/vg_root/lv_root`  
 
-sudo mount /dev/vg_root/lv_root /mnt  
+`sudo mount /dev/vg_root/lv_root /mnt`  
 
-sudo xfsdump -J - /dev/VolGroup00/LogVol00 | sudo xfsrestore -J - /mnt  
+`sudo xfsdump -J - /dev/VolGroup00/LogVol00 | sudo xfsrestore -J - /mnt`  
 
-for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done  
+`for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done`  
 
-sudo chroot /mnt/  
+`sudo chroot /mnt/`  
 
-sudo grub2-mkconfig -o /boot/grub2/grub.cfg  
+`sudo grub2-mkconfig -o /boot/grub2/grub.cfg`  
 
 cd /boot ; for i in \`ls initramfs-*img\`; do dracut -v $i \`echo $i|sed "s/initramfs-//g; s/.img//g"\` --force; done  
 
