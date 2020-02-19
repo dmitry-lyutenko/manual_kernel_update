@@ -1,6 +1,6 @@
 sudo yum install xfsdump\n
 
-#1. уменьшить том / до 8G
+# 1. уменьшить том / до 8G
 
 sudo pvcreate /dev/sdb  
 
@@ -44,14 +44,14 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 cd /boot; for i in `ls initramfs-*img`; do dracut -v $i `echo $i | sed "s/initramfs-//g;s/.img//g"` --force; done  
 
 
-#2. выделить том под /var
+# 2. выделить том под /var
 
 sudo pvcreate /dev/sdc/ /dev/sdd  
 
 sudo vgcreate vg_var /dev/sdc /dev/sdd  
 
 
-#3./var - сделать в mirror
+# 3./var - сделать в mirror
 
 sudo lvcreate -L 950M -m1 -n lv_var vg_var  
 
@@ -64,7 +64,7 @@ sudo cp -aR /var/* /mnt
 sudo mkdir /tmp/oldvar && sudo mv /var/* /tmp/oldvar  
 
 
-#4. прописать монтирование в fstab  
+# 4. прописать монтирование в fstab  
 
 sudo echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab  
 
@@ -78,7 +78,7 @@ sudo vgremove /dev/vg_root
 sudo pvremove /dev/sdb  
 
 
-#5. выделить том под /home
+# 5. выделить том под /home
 
 sudo lvcreate -n LogVol_Home -L 2G /dev/VolGroup00  
 
@@ -96,11 +96,11 @@ sudo mount /dev/VolGroup00/LogVol_Home /home/
 
 sudo echo "`blkid | grep HOME | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
 
-6. /home - сделать том для снэпшотов
+# 6. /home - сделать том для снэпшотов
 
 sudo lvcreate -L 100MB -s -n home_snap /dev/VolGroup00/LogVol_Home
 
-#7. - сгенерить файлы в /home/
+# 7. - сгенерить файлы в /home/
 
 - снять снэпшот  
 
