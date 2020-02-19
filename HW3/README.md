@@ -1,4 +1,4 @@
-sudo yum install xfsdump
+sudo yum install xfsdump\n
 
 1. уменьшить том / до 8G
 
