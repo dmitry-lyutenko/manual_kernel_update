@@ -118,6 +118,8 @@ sudo echo "\`blkid | grep HOME | awk '{print $2}'\` /home xfs defaults 0 0" >> /
 
 `sudo mount /home`
 
+![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW3/2snapshot.jpg)
+
 
 
 Ссылка на образ
