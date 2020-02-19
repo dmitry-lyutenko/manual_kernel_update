@@ -20,7 +20,7 @@ sudo chroot /mnt/
 
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg  
 
-cd /boot ; for i in \`ls initramfs-*img\`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done  
+cd /boot ; for i in \`ls initramfs-*img\`; do dracut -v $i \`echo $i|sed "s/initramfs-//g; s/.img//g"\` --force; done  
 
 
 выйти из системы, зайти снова и перезагрузиться
@@ -41,7 +41,7 @@ sudo chroot /mnt/
 
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg  
 
-cd /boot; for i in `ls initramfs-*img`; do dracut -v $i `echo $i | sed "s/initramfs-//g;s/.img//g"` --force; done  
+cd /boot; for i in \`ls initramfs-*img\`; do dracut -v $i \`echo $i | sed "s/initramfs-//g;s/.img//g"\` --force; done  
 
 
 # 2. выделить том под /var
@@ -66,7 +66,7 @@ sudo mkdir /tmp/oldvar && sudo mv /var/* /tmp/oldvar
 
 # 4. прописать монтирование в fstab  
 
-sudo echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab  
+sudo echo "\`blkid | grep var: | awk '{print $2}'\` /var ext4 defaults 0 0" >> /etc/fstab  
 
 
 выйти из системы, зайти снова и перезагрузиться
@@ -94,7 +94,7 @@ sudo umount /mnt
 
 sudo mount /dev/VolGroup00/LogVol_Home /home/  
 
-sudo echo "`blkid | grep HOME | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
+sudo echo "\`blkid | grep HOME | awk '{print $2}'\` /home xfs defaults 0 0" >> /etc/fstab
 
 # 6. /home - сделать том для снэпшотов
 
