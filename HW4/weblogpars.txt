@@ -1,0 +1,41 @@
+#!/bin/sh
+lockparser=/tmp/lockfilepars
+if [ -f $lockparser ]
+then 
+    echo "Failed to acquire lockfile: $lockparser."
+    echo "Held by $lockparser"
+    exit 1
+fi
+
+sudo touch $lockparser
+trap 'sudo rm -f "$lockparser"; exit &?' INT TERM EXIT
+cat /tmp/access-4560-644067.log | wc -l > /tmp/newcount 
+old_count_string=`cat /tmp/oldcount`
+new_count_string=`cat /tmp/newcount` 
+if [ "$new_count_string" -lt "$old_count_string" ]
+then
+ip=$(awk  "NR<$new_count_string" /tmp/access-4560-644067.log | awk '{ ipcount[$1]++ } END {for (i in ipcount) { printf "IP-%13s - %d \n", i, ipcount[i] } }' | awk -F"-" '{print $1, $2, $3}' | sort -nrk3 | sudo head -n5)
+fqdnaddr=$(awk "NR<$new_count_string" /tmp/access-4560-644067.log | awk 'match($0, /(https?):\/\/([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})/) { print substr( $0, RSTART, RLENGTH )}' \
+|  awk '{ ipcount[$1]++ } END {for (i in ipcount) { printf "%13s - %d \n", i, ipcount[i] } }' | awk -F"-" '{print $1, $2}' | sort -nrk2  | \
+ head -n3)
+errors=$(awk "NR<$new_count_string"  /tmp/access-4560-644067.log | cut -f9 -d ' ' | egrep -v '^"|^200|^301' | sort  | uniq)
+codes=$(awk "NR<$new_count_string" /tmp/access-4560-644067.log | cut -f9 -d ' ' | egrep -v '^"' | sort | awk '{ count[$1]++ } END {for (i in count) { print "\n", i, count[i] }}')  
+startdate=$(awk "NR<$new_count_string" /tmp/access-4560-644067.log | sed -n 1p | cut -f4 -d' ' | sed 's/\[//')
+enddate=$(awk "NR>=$new_count_string" /tmp/access-4560-644067.log | sed -n "$new_count_string"p | cut -f4 -d' ' | sed 's/\[//')
+echo -e "Отчет за период: ${startdate} - $enddate\n IP-Адреса:\n $ip\n Доменные имена:\n $fqdnaddr\n Коды ошибок:\n $errors\n Кол-во кодов:\n $codes\n" |  sendmail  vagrant@localhost
+sudo echo $new_count_string > /tmp/oldcount
+else
+ip=$(awk  "NR>=$(($old_count_string+1))" /tmp/access-4560-644067.log | awk '{ ipcount[$1]++ } END {for (i in ipcount) { printf "IP-%13s - %d \n", i, ipcount[i] } }' | awk -F"-" '{print $1, $2, $3}' | sort -nrk3 | sudo head -n5)
+fqdnaddr=$(awk "NR>=$(($old_count_string+1))" /tmp/access-4560-644067.log | awk 'match($0, /(https?):\/\/([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})/) { print substr( $0, RSTART, RLENGTH )}' \
+|  awk '{ ipcount[$1]++ } END {for (i in ipcount) { printf "%13s - %d \n", i, ipcount[i] } }' | awk -F"-" '{print $1, $2}' | sort -nrk2  | \
+sudo head -n3)
+errors=$(awk "NR<$new_count_string" /tmp/access-4560-644067.log | cut -f9 -d ' ' | egrep -v '^"|^200|^301' | sort | uniq) 
+codes=$(awk "NR<$new_count_string" /tmp/access-4560-644067.log | cut -f9 -d ' ' | egrep -v '^"' | sort | awk '{ count[$1]++ } END {for (i in count) { print "\n", i, count[i] }}') 
+startdate=$(cat /tmp/access-4560-644067.log | sed -n "$old_count_string"p | cut -f4 -d' ' | sed 's/\[//')
+enddate=$(cat /tmp/access-4560-644067.log | sed -n "$new_count_string"p | cut -f4 -d' ' | sed 's/\[//')
+echo -e "Отчет за период: ${startdate} - $enddate\n IP-Адреса:\n $ip\n Доменные имена:\n $fqdnaddr\n Коды ошибок:\n $errors\n Кол-во кодов:\n $codes\n" |  sendmail vagrant@localhost
+sudo echo $new_count_string > /tmp/oldcount
+fi
+sudo rm -f "$lockparser"
+trap - INT TERM EXIT
+
