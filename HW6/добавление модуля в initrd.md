@@ -32,7 +32,7 @@ Hello! You are in dracut module!
        |:_/ |
       //   \ \
      (|     | )
-    /'\_   _/`\
+    /\_   _/\
     \___)=(___/
 msgend
 sleep 10
