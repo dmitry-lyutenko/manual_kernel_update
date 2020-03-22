@@ -40,3 +40,5 @@ echo " continuing...."`
 
 ##### Пересобираем образ initrd
 `mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)`
+
+![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW6/1.jpg)
