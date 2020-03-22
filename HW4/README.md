@@ -5,4 +5,4 @@
 ##### 5. В конце работы скрипта значение перемнной old_count_string перезаписывается занчением переменной new_count_string.
 ##### 6. Скрипт располагается в каталоге /etc/cron.hourly/ и называется weblogpars.sh
 ##### 7. Для ежечасного запуска скрипта в crontab -e записана строка вида:
-###### 0 */1 * * * /etc/cron.hourly/weblogpars.sh
+###### 0 */1 * * * /etc/cron.hourly/weblogpars.sh /tmp/access-4560-644067.log
