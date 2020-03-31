@@ -1,0 +1,18 @@
+[Unit]
+Requires=zookeeper.service
+After=zookeeper.service
+
+[Service]
+Type=simple
+User=kafka
+ExecStart=/bin/sh -c '/home/kafka/bin/kafka-server-start.sh /home/kafka/config/server.properties > /home/kafka/kafka.log'
+ExecStop=/home/kafka/bin/kafka-server-stop.sh
+Restart=on-failure
+MemoryLimit=2M
+CPUQuota=2%
+TasksMax=1000
+BlockIOWeight=500
+
+[Install]
+WantedBy=multi-user.target
+
