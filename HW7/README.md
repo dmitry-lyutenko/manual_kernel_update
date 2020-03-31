@@ -1,7 +1,7 @@
 ### Задание 1.
 #### Создать сервис и unit-файлы для этого сервиса.
 
-Создаем файл с переменными  cat /etc/sysconfig/watchlog
+Создаем файл с переменными  cat /etc/sysconfig/watchlog  
 WORD="ALERT"  
 LOG=/var/log/watchlog.log
 
@@ -19,7 +19,8 @@ ALERT
 
 alarm Alert
 
-test ALERT
+test ALERT  
+
 Пишем скрипт /opt/watchlog.sh  
 #!/bin/bash 
 WORD=$1    
@@ -32,22 +33,9 @@ else
 exit 0    
 fi    
 
-Далее пишем unit (watchlog.service) для   в /etc/systemd/system    
-[Unit]  
-Description=My watchlog service  
-[Service]  
-Type=oneshot  
-EnvironmentFile=/etc/sysconfig/watchdog  
-ExecStart=/opt/watchlog.sh $WORD $LOG  
+Далее пишем unit ([watchlog.service](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/watchlog.service)) в /etc/systemd/system    
 
-Создаем юнит (watclog.timer) для таймера в /etc/systemd/system  
-[Unit]  
-Description=Run watchlog script every 30 second  
-[Timer]  
-OnUnitActiveSec=30  
-Unit=watchlog.service  
-[Install]  
-WantedBy=multi-user.target
+Создаем юнит ([watclog.timer](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/watchlog.timer)) для таймера в /etc/systemd/system  
 
 Запускаем сервис
 systemctl start watchlog.timer
@@ -68,7 +56,7 @@ OPTIONS=-f conf/second.conf
 
 В директории /etc/httpd/conf создаем файлы  first.conf и second.conf копированием из исходного (httpd.conf), во втором файле меняем порт на 8080 и путь  PidFile /var/run/httpd-second.pid
 
-Запускаем первый и второй сервис
+Запускаем первый и второй сервис  
 systemctl start httpd@first  
 systemctl start httpd@second  
 ![picture1](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/httpd.jpg)
@@ -80,4 +68,19 @@ systemctl start httpd@second
 #### - ограничить сервис ещё по трём ресурсам, которые не были рассмотрены на лекции;
 #### - реализовать один из вариантов restart и объяснить почему выбран именно этот вариант..
 
-[zookeeper.service](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/zookeeper.service)
+Для целей выполнения данного задания установлен сервис Kafka  
+Юнит-файлы:  
+[zookeeper.service](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/zookeeper.service)  
+[kafka.service](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/kafka.service)
+
+Реализован вариант перезагрузки Restart=on-failure. В данном случае при имитации сбоя сервиса kill -9 PID, сервис перезагруается самостоятельно.
+
+Запуск сервиса
+systemctl start kafka
+![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/status1.jpg)
+
+Имитируем сбой сервиса
+![picture3](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/kill.jpg)
+
+В течении 30-60 сек сервис восстанавливается
+![picture4](https://github.com/Andrey874/manual_kernel_update/blob/master/HW7/statys2.jpg)
