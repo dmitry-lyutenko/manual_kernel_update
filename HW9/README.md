@@ -17,7 +17,8 @@
 ![picture1](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/idvagrant.jpg)  
 
 Пользователь test1 не входит в данную группу:
-![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/idtest1.jpg)
+![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/idtest1.jpg)  
+
 В будний день пользователь test1 подключается по ssh  
 ![picture3](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/sshtest1.jpg)  
 Меняем дату на хосте на выходной день, в данном примере суббота:  
