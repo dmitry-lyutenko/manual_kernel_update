@@ -1,13 +1,21 @@
+### Задание
+#### Запретить всем пользователям, кроме группы admin логин в выходные (суббота и воскресенье), без учета праздников  
 
-В директорию /usr/local/bin/ ложим скрипт - ([script.sh](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/script.sh))
-Данный скрипт проводит проверку подключающегося пользователя на принадлежность к группе admin (gid1001) и текущий день (будни или выходной).
+В директорию /usr/local/bin/ ложим скрипт - ([script.sh](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/script.sh)).
+Данный скрипт проводит проверку подключающегося пользователя на принадлежность к группе admin (gid1001) и текущий день (будни или выходной).  
+
 Далее добавляем в файл /etc/pam.d/login строку:   
-account       required     pam_exec.so /usr/local/bin/script.sh  
+`account       required     pam_exec.so /usr/local/bin/script.sh`  
 Общий вид файла: ([login](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/login))  
-Добавляем в файл /etc/pam.d/sshd строку: account       required    pam_exec.so /usr/local/bin/script.sh  
-Общий вид файла: ([sshd](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/sshd))
+
+Добавляем в файл /etc/pam.d/sshd строку:  
+`account       required    pam_exec.so /usr/local/bin/script.sh`  
+
+Общий вид файла: ([sshd](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/sshd))  
+
 Проверяем, что пользователь vagrant состоит в группе admin:  
-![picture1](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/idvagrant.jpg)
+![picture1](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/idvagrant.jpg)  
+
 Пользователь test1 не входит в данную группу:
 ![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW9/idtest1.jpg)
 В будний день пользователь test1 подключается по ssh  
