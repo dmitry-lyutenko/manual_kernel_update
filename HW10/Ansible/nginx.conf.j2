@@ -1,0 +1,29 @@
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+
+
+    server {
+        listen       {{ nginx_listen_port }} default_server;
+        server_name  default_server;
+        root /usr/share/nginx/html;
+ 
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        location / {
+          
+ 
+        }
+}
+}
+       
+
+
+   
+    
