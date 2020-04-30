@@ -10,6 +10,7 @@
       "name": "{{user `image_name`}}",
       "type": "virtualbox-iso",
       "vm_name": "packer-centos-vm",
+      "headless": true,
 
       "boot_wait": "10s",
       "disk_size": "10240",
@@ -58,6 +59,7 @@
       "type": "vagrant"
     }
   ],
+  
   "provisioners": [
     {
       "type": "shell",

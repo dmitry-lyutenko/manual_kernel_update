@@ -1,9 +1,9 @@
 # Describe VMs
 MACHINES = {
   # VM name "kernel update"
-  :"kernel-update" => {
+  :"kernel-install" => {
               # VM box
-              :box_name => "centos/7",
+              :box_name => "centos/7.7_5.6.7",
               # VM CPU count
               :cpus => 2,
               # VM RAM size (Mb)
@@ -18,6 +18,9 @@ MACHINES = {
 Vagrant.configure("2") do |config|
   MACHINES.each do |boxname, boxconfig|
     # Disable shared folders
+    if Vagrant.has_plugin?("vagrant-vbguest")
+      config.vbguest.auto_update = false
+    end
     config.vm.synced_folder ".", "/vagrant", disabled: true
     # Apply VM config
     config.vm.define boxname do |box|

@@ -1,0 +1,49 @@
+{
+  "variables": {
+    "artifact_description": "CentOS 7.7 with kernel 5.8.6",
+    "artifact_version": "7.7.1908",
+    "image_name": "centos-7.7"
+  },
+
+  
+  "builders": [
+    {
+      "name": "{{user `image_name`}}",
+      "communicator": "ssh",
+      "source_path": "centos/7",
+      "provider": "virtualbox",
+      "add_force": true,
+      "type": "vagrant"
+    }
+  ],
+  
+  "post-processors": [
+    {
+      "output": "centos-{{user `artifact_version`}}-kernel-5-x86_64-Minimal.box",
+      "compression_level": "7",
+      "type": "vagrant"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "../../vagrant/starz/make.yml"
+    },
+  
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "start_retry_timeout": "1m",
+      "expect_disconnect": true,
+      "pause_before": "20s",
+      "override": {
+        "{{user `image_name`}}" : {
+          "scripts" :
+            [
+              "scripts/stage-2-clean.sh"
+            ]
+        }
+      }
+    }
+  ]
+}

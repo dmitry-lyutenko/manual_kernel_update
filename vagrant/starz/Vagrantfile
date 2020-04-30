@@ -1,0 +1,39 @@
+servers=[
+  {
+    :hostname => "kernel-make-1",
+    :ip => "10.10.10.10",
+    :box => "centos/7",
+    :ram => 2048,
+    :cpu => 2
+  },
+  {
+    :hostname => "kernel-make-2",
+    :ip => "10.10.10.20",
+    :box => "centos/7",
+    :ram => 2048,
+    :cpu => 2
+  }
+]
+
+Vagrant.configure(2) do |config|
+    servers.each do |machine|
+        if Vagrant.has_plugin?("vagrant-vbguest")
+            config.vbguest.auto_update = false
+          end
+          config.vm.synced_folder ".", "/vagrant", disabled: true
+          config.vm.synced_folder "~/gitz/manual_kernel_update/.shared/", "/shared", type: "virtualbox", disabled: true
+          ssh_pub_key = File.readlines("#{Dir.home}/.ssh/appuser.pub").first.strip
+          config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys", privileged: false
+          
+
+        config.vm.define machine[:hostname] do |node|
+            node.vm.box = machine[:box]
+            node.vm.hostname = machine[:hostname]
+            node.vm.network "private_network", ip: machine[:ip]
+            node.vm.provider "virtualbox" do |vb|
+                vb.customize ["modifyvm", :id, "--memory", machine[:ram]]
+            end
+        
+        end
+    end
+end
