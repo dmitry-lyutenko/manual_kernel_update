@@ -5,15 +5,10 @@ The code provided here is not production-ready. It is my sandbox where I learn l
 Base image is built with packer/kernel-install/centos.json and registered
 locally as centos/7.7_5.6.7
 and remotely https://app.vagrantup.com/Deriul/boxes/centos7.7_5.6.7
-```
-❯ vagrant box list
-centos/7         (virtualbox, 1905.1)
-centos/7.7_5.6.7 (virtualbox, 0)
-ubuntu/xenial64  (virtualbox, 20200428.0.0)
-```
+
 # **HW_1 \*(make kernel)**
 ## **Manual**
-Building VM with vagrant/starz/vagrantfile from centos/7 and manually building the kernel
+Building VM with vagrant/starz/vagrantfile from centos/7 and manually making the kernel
 ```
 sudo yum install wget zip unzip gpg -y && \
   cd /tmp/ && \
@@ -37,7 +32,7 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 sudo grubby --set-default /boot/vmlinuz-5.6.8
 ```
 ```
-[vagrant@kernel-update ~]$ uname -r
+❯ uname -r
 5.6.8
 ```
 from https://www.cyberciti.biz/tips/compiling-linux-kernel-26.html
