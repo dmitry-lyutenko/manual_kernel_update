@@ -55,7 +55,7 @@ sudo init 6
 from https://www.cyberciti.biz/tips/compiling-linux-kernel-26.html
 
 ## **Automated**
-Image is built with packer/kernel-make/centos.json from centos/7 and registered as
+Image is built with packer/kernel-make/centos.json from centos/7 and registered as https://app.vagrantup.com/Deriul/boxes/centos7.7_5.6.10
 
 # **HW_1 \**(shared folders)**
 To enable shared folders do locally
