@@ -1,0 +1,7 @@
+output*
+.git
+.vagrant
+packer_cache
+.shared
+*.box
+*.retry
