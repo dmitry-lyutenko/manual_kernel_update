@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: Install packages
+    yum: 
+      name:
+        - "@Development tools"
+        - wget
+        - ncurses-devel
+        - bison
+        - flex
+        - bc
+        - openssl-devel
+        - elfutils-libelf-devel
+      state: present
+      update_cache: yes
+

@@ -1,7 +1,7 @@
 {
   "variables": {
     "artifact_description": "CentOS 7.7 with kernel 5.8.6",
-    "artifact_version": "7.7.1908",
+    "artifact_version": "7.7.1910",
     "image_name": "centos-7.7"
   },
 
@@ -17,15 +17,17 @@
     }
   ],
 
+  "post-processors": [
+    {
+      "output": "centos-{{user `artifact_version`}}-kernel-5-x86_64-Minimal.box",
+      "compression_level": "7",
+      "type": "vagrant"
+    }
+  ],
   "provisioners": [
     {
       "type": "ansible",
-      "playbook_file": "../../vagrant/starz/pre-req.yml"
-    },
-
-    {
-      "type": "ansible",
-      "playbook_file": "../../vagrant/starz/install.yml"
+      "playbook_file": "../../vagrant/starz/make.yml"
     },
 
     {

@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+  - name: Copy kernel
+    copy:
+      src: ../../.shared/kernel.tar.gz
+      dest: /tmp/kernel.tar.gz
+      # remote_src: yes
+
+  - name: Untar kernel
+    shell: tar xzf kernel.tar.gz
+    args:
+      chdir: /tmp/  
+
+  - name: Install kernel
+    shell: "{{ item }}"
+    with_items:
+    - make modules_install
+    - make install
+    args:
+      chdir: /tmp/linux-5.6.10
+
+  - name: Configure grub
+    shell: "{{ item }}"
+    with_items:
+    - grub2-mkconfig -o /boot/grub2/grub.cfg
+    - grubby --set-default /boot/vmlinuz-5.6.10
+    
+

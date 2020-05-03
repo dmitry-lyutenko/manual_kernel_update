@@ -1,2 +1,2 @@
-[kernel-make-1]
+[all]
 kernel-make-1 ansible_host=10.10.10.10
