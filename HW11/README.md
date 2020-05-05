@@ -23,3 +23,6 @@ Docker образ описан в  [Dockerfile](https://github.com/Andrey874/man
 
 Загрузка образа в Docker Hub:
 `sudo docker push andrey874/my_nginx`
+
+Ссылка на образ в Docker Hub:
+https://hub.docker.com/repository/docker/andrey874/my_nginx
