@@ -9,5 +9,17 @@
 Ядро в контейнере собрать можно. Но при этом сниается скорость запуска контейнера, что также замедляет скрость обновления приложений в контейнере.  
 
 ### Приктическое задание.
-Docker образ описан в  [Dockerfile](https://github.com/Andrey874/manual_kernel_update/blob/master/HW11/Dockerfile)
+Docker образ описан в  [Dockerfile](https://github.com/Andrey874/manual_kernel_update/blob/master/HW11/Dockerfile)  
 
+Файл конфигурации nginx - [nginx.conf](https://github.com/Andrey874/manual_kernel_update/blob/master/HW11/nginx.conf)
+
+Дефолтная страница - [index.html](https://github.com/Andrey874/manual_kernel_update/blob/master/HW11/index.html)
+
+Сборка образа:
+`sudo docker build -f Dockerfile -t andrey874/my_nginx .`
+
+Запуск контейнера:
+`sudo docker run -d -p 8080:8080 andrey874/my_nginx:latest`
+
+Загрузка образа в Docker Hub:
+`sudo docker push andrey874/my_nginx`
