@@ -1,0 +1,172 @@
+    1  vi /etc/hosts
+    2  borg init -e none backup:files-etc
+    3  borg init -e none 172.16.0.1:files-etc
+    4  borg init -e none 172.16.0.1:/etc
+    5  yum install strace
+    6  strace borg init -e none 172.16.0.1:/etc
+    7  cd /
+    8  ls
+    9  cd usr
+   10  ls
+   11  cd tmp
+   12  ls
+   13  mkdir /testborg
+   14  cd ~
+   15  borg init --encryption=none /testborg
+   16  borg init --encryption=none backup:testborg
+   17  whereis borg
+   18  chmod 0777 /usr/bin/borg
+   19  borg init -e none 172.16.0.1:files-etc
+   20  tail /var/log/messages 
+   21  borg init -e none 172.16.0.1:files-etc
+   22  sudo systemctl status firewalld
+   23  borg init -e none root@172.16.0.1:files-etc
+   24  sudo getenforce
+   25  sudo setenforce 0
+   26  borg init -e none root@172.16.0.1:files-etc
+   27  sudo shutdown -r now
+   28  borg init -e none root@172.16.0.1:files-etc
+   29  ip a
+   30  ping 172.16.0.1
+   31  tail /var/log/messages 
+   32  borg check
+   33  borg check /testborg
+   34  tail /var/log/messages 
+   35  ls -a
+   36  cd .cache/
+   37  ls
+   38  cd borg/
+   39  ls
+   40  borg list
+   41  borg --help
+   42  history
+   43  [root@server borg]#
+   44  borg init --encryption=none backup:testborg
+   45  borg init --encryption=none root@backup:testborg
+   46  exit
+   47  ssh-keygen
+   48  pwd
+   49  [root@server ~]#
+   50  ssh-copy-id -f -i /root/.ssh/id_rsa.pub root@172.16.0.1
+   51  ssh root@172.16.0.1
+   52  ssh-copy-id -f -i /root/.ssh/id_rsa.pub root@172.16.0.1
+   53  cd .ssh/
+   54  ls
+   55  ls -l
+   56  chmod 0600 /root/.ssh/id_rsa
+   57  ls -l
+   58  ssh-copy-id -f -i /root/.ssh/id_rsa.pub root@172.16.0.1
+   59  ssh-keyscan -t rsa 172.16.0.1 >> /root/.ssh/known_hosts 2>/dev/null
+   60  ssh-copy-id -f -i /root/.ssh/id_rsa.pub root@172.16.0.1
+   61  sshpass -p "vagrant" ssh-copy-id -f -i /root/.ssh/id_rsa.pub root@172.16.0.1
+   62  yum install sshpass
+   63  sshpass -p "vagrant" ssh-copy-id -f -i /root/.ssh/id_rsa.pub root@172.16.0.1
+   64  ssh root@172.16.0.1
+   65  ssh-copy-id -i ~/.ssh/id_rsa root@172.16.0.1
+   66  ssh 172.16.0.1
+   67  ssh-copy-id -i ~/.ssh/id_rsa root@172.16.0.1
+   68  starce ssh 172.16.0.1
+   69  exit
+   70  cd ~
+   71  ./bcpetc.sh 
+   72  borg list backup:testborg
+   73  borg list backup:testborg::etc-2020-05-27_15:19:39
+   74  borg mount backup:testborg::etc-2020-05-27_15:19:39 /mnt
+   75  cd /mnt
+   76  ls
+   77  cd etc
+   78  ls
+   79  exit
+   80  man script
+   81  script -a ~/script
+   82  cd ~
+   83  ls
+   84  cat script 
+   85  vi script 
+   86  cat script 
+   87  exit
+   88  starce ssh 172.16.0.1
+   89  ssh 172.16.0.1
+   90  yum install starce -y
+   91  yum install strace -y
+   92  starce ssh 172.16.0.1
+   93  strace ssh 172.16.0.1
+   94  ss -tulnp
+   95  ssh 172.16.0.1
+   96  ssh-copy-id -i ~/.ssh/id_rsa root@172.16.0.1
+   97  ssh 172.16.0.1
+   98  history
+   99  borg init --encryption=none backup:testborg
+  100  pwd
+  101  touch bcpetc.sh
+  102  vi bcpetc.sh
+  103  kill
+  104  kill -s
+  105  kill -l
+  106  vi bcpetc.sh
+  107  chmod +x bcpetc.sh 
+  108  sh bcpetc.sh 
+  109  vi bcpetc.sh
+  110  sh bcpetc.sh 
+  111  vi bcpetc.sh
+  112  ./bcpetc.sh 
+  113  vi bcpetc.sh
+  114  ./bcpetc.sh 
+  115  vi bcpetc.sh
+  116  ./bcpetc.sh 
+  117  vi bcpetc.sh
+  118  ./bcpetc.sh 
+  119  vi bcpetc.sh
+  120  ssh root@backup
+  121  vi bcpetc.sh
+  122  ./bcpetc.sh 
+  123  vi bcpetc.sh
+  124  ./bcpetc.sh 
+  125  vi bcpetc.sh
+  126  ./bcpetc.sh 
+  127  cd /testborg/
+  128  ks
+  129  ls
+  130  borg list backup:testborg
+  131  borg list backup:testborg::etc-2020-05-27_14:24:05
+  132  borg mount backup:testborg::etc-2020-05-27_14:24:05 /mnt
+  133  cd /mnt
+  134  ls
+  135  cd etc
+  136  ls
+  137  cd ~
+  138  mount | grep borg
+  139  umount /mnt/etc
+  140  umount /mnt/
+  141  vi bcpetc.sh
+  142  ./bcpetc.sh 
+  143  cd /var/log
+  144  ls
+  145  cat borg
+  146  tail messages 
+  147  cd ~
+  148  vi bcpetc.sh
+  149  ./bcpetc.sh 
+  150  cd /var/log
+  151  cat borg 
+  152  cd ~
+  153  vi bcpetc.sh
+  154  ./bcpetc.sh 
+  155  cd /var/log
+  156  ls
+  157  cat borg
+  158  cd ~
+  159  vi bcpetc.sh
+  160  ./bcpetc.sh 
+  161  cd /var/log
+  162  cat borg
+  163  cd ~
+  164  vi bcpetc.sh
+  165  ./bcpetc.sh 
+  166  cd /var/log
+  167  cat borg
+  168  script
+  169  logout
+  170  ip a
+  171  history
+  172  history > commands
