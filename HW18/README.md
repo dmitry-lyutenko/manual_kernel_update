@@ -32,7 +32,7 @@ DBPassword=zabbix` >> /etc/zabbix/zabbix_server.conf
 `systemctl start zabbix-server`  
 `echo "php_value date.timezone Europe/Moscow" >> /etc/httpd/conf.d/zabbix.conf`  
 `systemctl start httpd`  
-`systemctl enable httpd`
+`systemctl enable httpd`  
 /etc/zabbixzabbix_agentd.conf  # настройки заббикс агент  
 `systemctl enable zabbix-agent`  
 `systemctl start zabbix-agent`  
