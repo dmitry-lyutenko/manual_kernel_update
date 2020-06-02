@@ -39,4 +39,4 @@ DBPassword=zabbix` >> /etc/zabbix/zabbix_server.conf
 `setsebool -P httpd_can_network_connect=1`  
 `setsebool -P httpd_can_connect_zabbix=1`   
 Дэшборд  
-![picture5](https://github.com/Andrey874/manual_kernel_update/blob/master/HW18/2.jpg)
+![picture5](https://github.com/Andrey874/manual_kernel_update/blob/master/HW18/screen.jpg)
