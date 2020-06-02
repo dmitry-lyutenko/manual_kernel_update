@@ -28,8 +28,7 @@ DBName=zabbix
 DBUser=zabbix  
 DBPassword=zabbix` >> /etc/zabbix/zabbix_server.conf  
 `systemctl enable zabbix-server`  
-`systemctl start zabbix-server`  
-`yum install zabbix-agent`  
+`systemctl start zabbix-server`    
 `systemctl start httpd`  
 `systemctl enable httpd`  
 `systemctl enable mariadb`  
