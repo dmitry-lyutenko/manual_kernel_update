@@ -11,7 +11,7 @@
 `yum update`    
 `rpm -Uvh https://repo.zabbix.com/zabbix/3.0/rhel/7/x86_64/zabbix-release-3.0-1.el7.noarch.rpm`  
 `yum install zabbix-server-mysql zabbix-web-mysql zabbix-agent`  
-`yum install mariadb-server -y`
+`yum install mariadb-server -y`  
 `echo innodb_file_per_table >> /etc/my.cnf`  
 `systemctl start mariadb`  
 `mysql_secure_installation` #смена пароля на zabbix для доступа к БД, на все отвечаем y
@@ -26,7 +26,7 @@ echo
 `DBHost=localhost  
 DBName=zabbix  
 DBUser=zabbix  
-DBPassword=zabbix` >> /etc/zabbix/zabbix_server.conf
+DBPassword=zabbix` >> /etc/zabbix/zabbix_server.conf  
 `systemctl enable zabbix-server`  
 `systemctl start zabbix-server`  
 `yum install zabbix-agent`  
