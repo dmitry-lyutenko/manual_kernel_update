@@ -29,7 +29,8 @@ DBName=zabbix
 DBUser=zabbix  
 DBPassword=zabbix` >> /etc/zabbix/zabbix_server.conf  
 `systemctl enable zabbix-server`  
-`systemctl start zabbix-server`    
+`systemctl start zabbix-server`  
+`echo "php_value date.timezone Europe/Moscow" >> /etc/httpd/conf.d/zabbix.conf`  
 `systemctl start httpd`  
 `systemctl enable httpd`       
 `setsebool -P httpd_can_network_connect=1`  
