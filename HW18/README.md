@@ -11,9 +11,15 @@
 `yum update`    
 `rpm -Uvh https://repo.zabbix.com/zabbix/3.0/rhel/7/x86_64/zabbix-release-3.0-1.el7.noarch.rpm`  
 `yum install zabbix-server-mysql zabbix-web-mysql zabbix-agent`  
-`yum install mariadb-server -y`  
+`yum install mariadb-server -y`
+`echo innodb_file_per_table >> /etc/my.cnf`  
 `systemctl start mariadb`  
-`mysql_secure_installation` #смена пароля для доступа к БД  
+`mysql_secure_installation` #смена пароля на zabbix для доступа к БД, на все отвечаем y
+#### Создаем БД  
+`mysql -p  
+create database zabbix character set utf8 collate utf8_bin;  
+grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';  
+exit`  
 `zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix`  
 `/etc/zabbix/zabbix_server.conf` #настройки подключения к БД  
 `systemctl enable zabbix-server`  
