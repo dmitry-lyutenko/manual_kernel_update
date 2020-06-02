@@ -18,8 +18,11 @@
 #### Создаем БД  
 `mysql -p  
 create database zabbix character set utf8 collate utf8_bin;  
+
 grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';  
+
 exit`  
+
 `zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix`  
 `/etc/zabbix/zabbix_server.conf` #настройки подключения к БД  
 echo   
