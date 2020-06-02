@@ -17,12 +17,12 @@
 `mysql_secure_installation` #смена пароля на zabbix для доступа к БД, на все отвечаем y
 #### Создаем БД  
 `mysql -p  
-create database zabbix character set utf8 collate utf8_bin;    
-grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';      
-exit`    
+create database zabbix character set utf8 collate utf8_bin;  
+grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';  
+exit`  
 `zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix`  
-`/etc/zabbix/zabbix_server.conf` #настройки подключения к БД
-echo 
+`/etc/zabbix/zabbix_server.conf` #настройки подключения к БД  
+echo   
 `DBHost=localhost  
 DBName=zabbix  
 DBUser=zabbix  
