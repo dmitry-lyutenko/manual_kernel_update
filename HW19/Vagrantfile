@@ -109,6 +109,10 @@ Vagrant.configure("2") do |config|
             echo "192.168.1.0/24 via 192.168.255.9" >> /etc/sysconfig/network-scripts/route-eth6
             echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
             systemctl restart network
+            ip route add 192.168.2.0/24 via 192.168.255.5 dev eth5
+            ip route add 192.168.2.0/24 via  192.168.255.9 dev eth6
+            ip route add default via 192.168.255.1 dev eth1
+            ip route delete default via 10.0.2.2 dev eth0
             sysctl net.ipv4.conf.all.forwarding=1
             SHELL
         when "office1Router"
@@ -116,6 +120,8 @@ Vagrant.configure("2") do |config|
             echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
             echo "GATEWAY=192.168.255.6" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
             systemctl restart network
+            ip route add default via 192.168.255.6 dev eth1
+            ip route delete default via 10.0.2.2 dev eth0
             sysctl net.ipv4.conf.all.forwarding=1
             SHELL
         when "office2Router"
@@ -123,25 +129,33 @@ Vagrant.configure("2") do |config|
             echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
             echo "GATEWAY=192.168.255.10" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
             systemctl restart network
+            ip route add default via 192.168.255.10 dev eth1
+            ip route delete default via 10.0.2.2 dev eth0
             sysctl net.ipv4.conf.all.forwarding=1
             SHELL
         when "centralServer"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
-            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
-            echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+            echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
             systemctl restart network 
+            ip route add default via 192.168.0.1 dev eth1
+            ip route delete default via 10.0.2.2 dev eth0      
             SHELL
         when "office1Server"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
             echo "GATEWAY=192.168.2.65" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network 
+            systemctl restart network
+            ip route add default via 192.168.2.65 dev eth1
+            ip route delete default via 10.0.2.2 dev eth0
             SHELL
         when "office2Server"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-            echo "GATEWAY=192.168.1.129" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            echo "GATEWAY=192.168.1.129" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
             systemctl restart network
+            ip route add default via 192.168.2.129 dev eth1
+            ip route delete default via 10.0.2.2 dev eth0
             SHELL
         end
 
