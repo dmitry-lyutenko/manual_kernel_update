@@ -18,4 +18,14 @@
 `-A POSTROUTING ! -d 192.168.0.0/16 -o eth1 -j MASQUERADE`  
 `-A POSTROUTING -d 172.16.0.1/32 -p tcp -m tcp --dport 80 -j SNAT --to-source 192.168.255.6`  
 
+Результат работы knocking port виден на следующем скриншоте
+
+![picture1](https://github.com/Andrey874/manual_kernel_update/blob/master/HW20/knocking.jpg)
+
+После нескольких вподряд запросов на подключение по ssh к inetRouter доступ временно заблокировался. 
+
+#### Проброс портов
+Вы полняем на inetRouter2 curl-запрос на локальный адрес и получаем ответ от сервиса nginx, находящегося на centralSrver по адресу 172.16.0.1
+![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW20/pr.jpg)
+
 
