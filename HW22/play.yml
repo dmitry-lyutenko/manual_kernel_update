@@ -1,0 +1,160 @@
+---
+
+- name: Add lo2 on r1
+  hosts: r1
+  become: true
+  tasks:
+   - name: 'Add lo2 on r1'
+     copy:
+        src: ./ifcfg-lo.2r1
+        dest: /etc/sysconfig/network-scripts/ifcfg-lo.2
+        owner: root
+        group: root
+        mode: '0644' 
+
+- name: 'Add lo2 on  r2'
+  hosts: r2
+  become: true
+  tasks:
+  - name: Add config lo2 on r2
+    copy:
+      src: ./ifcfg-lo.2r2
+      dest: /etc/sysconfig/network-scripts/ifcfg-lo.2
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: 'Add lo2 on  r3'
+  hosts: r3
+  become: true
+  tasks:
+  - name: Add config lo2 on r3
+    copy:
+      src: ./ifcfg-lo.2r3
+      dest: /etc/sysconfig/network-scripts/ifcfg-lo.2
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: For install quagga
+  hosts: routers
+  become: true
+  tasks:
+  - name: Install quagga 
+    yum: 
+      name: quagga
+      state: latest
+
+- name: Change net on r2
+  hosts: r2
+  become: true
+  tasks:
+  - name: Del def ro eth0 on r2
+    shell: echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+
+- name: Change net on r3
+  hosts: r3
+  become: true
+  tasks:
+  - name: Del def ro eth0 on r3
+    shell: echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+
+
+- name: Restart network
+  hosts: routers
+  become: true
+  tasks:
+  - name: Restart net
+    systemd:
+       name: network
+       state: restarted
+
+       
+- name: 'Configure quagga on r3' 
+  hosts: r3
+  become: true
+  tasks:
+    - name: 'Makefile'
+      file:
+        path: /etc/quagga/ospfd.conf
+        state: touch
+        owner: quagga
+        group: quaggavt
+    - name: 'Configure ospfd file'
+      blockinfile: 
+        path: /etc/quagga/ospfd.conf
+        block: |
+          router ospf
+            router-id 10.0.0.3
+            passive-interface default
+            no passive-interface eth1
+            no passive-interface eth2
+            network 10.0.0.3/32 area 0
+            network 172.16.2.0/24 area 0
+            network 172.16.3.0/24 area 0
+
+- name: 'Configure quagga on r2'
+  hosts: r2
+  become: true
+  tasks:
+    - name: Makefile
+      file:
+        path: /etc/quagga/ospfd.conf
+        state: touch
+        owner: quagga
+        group: quaggavt
+    - name: 'Configure ospfd file'
+      blockinfile:
+        path: /etc/quagga/ospfd.conf
+        block: |
+          router ospf
+            router-id 10.0.0.2
+            passive-interface default
+            no passive-interface eth1
+            no passive-interface eth2
+            network 10.0.0.2/32 area 0
+            network 172.16.1.0/24 area 0
+            network 172.16.3.0/24 area 0
+ 
+- name: 'Configure quagga on r1'
+  hosts: r1
+  become: true
+  tasks:
+    - name: 'Makefile'
+      file:
+        path: /etc/quagga/ospfd.conf
+        state: touch
+        owner: quagga
+        group: quaggavt
+    - name: 'Configure ospfd file'
+      blockinfile:
+        path: /etc/quagga/ospfd.conf
+        block: |
+          router ospf
+            router-id 10.0.0.1
+            passive-interface default
+            no passive-interface eth1
+            no passive-interface eth2
+            network 10.0.0.1/32 area 0
+            network 172.16.1.0/24 area 0
+            network 172.16.2.0/24 area 0
+            default-information originate
+
+- name: 'Starting quagga'
+  hosts: routers
+  become: true
+  tasks:
+  - name: 'Starting zebra'
+    systemd: 
+      state: started
+      enabled: true
+      name: zebra
+  - name: 'Starting ospf'
+    systemd: 
+      state: started
+      enabled: true
+      name: ospfd
+
+
+       
+     
