@@ -1,18 +1,36 @@
-# Vagrant DNS Lab
+# Задание
 
-A Bind's DNS lab with Vagrant and Ansible, based on CentOS 7.
+Настраиваем split-dns  
+Цель: В результате выполнения ДЗ студент настроит split-dns.  
+взять стенд https://github.com/erlong15/vagrant-bind  
+добавить еще один сервер client2  
+завести в зоне dns.lab  
+имена  
+web1 - смотрит на клиент1  
+web2 смотрит на клиент2  
+завести еще одну зону newdns.lab  
+завести в ней запись  
+www - смотрит на обоих клиентов  
+настроить split-dns  
+клиент1 - видит обе зоны, но в зоне dns.lab только web1  
+клиент2 видит только dns.lab
 
-# Playground
+# Процесс выполнения
+На сервере ns01 отредактирован файл конфигурации /etc/named.conf/ сервера bind -- файл конфигурации разделен на три вью:  
+- view1 для client1 (192.168.50.15);  
+- view2 для client2 (192.168.50.25);  
+- default для всех остальных.
+Также добавлено описание новой зоны -- newdns.lab, в том числе на сервер ns02.
 
-<code>
-    vagrant ssh client
-</code>
+На ns01 для каждой вью созданы свои файлы описания зоны и хранятся в каталоге /etc/named/.
 
-  * zones: dns.lab, reverse dns.lab and ddns.lab
-  * ns01 (192.168.50.10)
-    * master, recursive, allows update to ddns.lab
-  * ns02 (192.168.50.11)
-    * slave, recursive
-  * client (192.168.50.15)
-    * used to test the env, runs rndc and nsupdate
-  * zone transfer: TSIG key
+Для разворачивания стенда необходимо запустить vagrantfile. Ansible устанавливается на сервер ns01 и с него распределяются все необходимые настройки.
+
+# Результат выполнения
+
+Клиент 1  
+![picture1](https://github.com/Andrey874/manual_kernel_update/blob/master/HW23/client1.jpg)
+
+Клиент 2  
+![picture2](https://github.com/Andrey874/manual_kernel_update/blob/master/HW23/client2.jpg)
+
