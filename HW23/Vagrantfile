@@ -1,0 +1,85 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+
+#  config.vm.provision "ansible" do |ansible|
+#    ansible.verbose = "vvv"
+#    ansible.playbook = "provisioning/playbook.yml"
+#    ansible.sudo = "true"
+#  end
+
+
+  config.vm.provider "virtualbox" do |v|
+	  v.memory = 256
+  end
+
+   config.vm.define "ns02" do |ns02|
+    ns02.vm.network "private_network", ip: "192.168.50.11", virtualbox__intnet: "dns"
+    ns02.vm.hostname = "ns02"
+    ns02.vm.provision "shell", inline: <<-SHELL
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && systemctl reload sshd
+    SHELL
+  end
+
+  config.vm.define "client1" do |client1|
+    client1.vm.network "private_network", ip: "192.168.50.15", virtualbox__intnet: "dns"
+    client1.vm.hostname = "client1"
+    client1.vm.provision "shell", inline: <<-SHELL
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && systemctl reload sshd
+    SHELL
+  end
+
+  config.vm.define "client2" do |client2|
+    client2.vm.network "private_network", ip: "192.168.50.25", virtualbox__intnet: "dns"
+    client2.vm.hostname = "client2"
+    client2.vm.provision "shell", inline: <<-SHELL
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && systemctl reload sshd
+    SHELL
+  end
+
+  config.vm.define "ns01" do |ns01|
+    ns01.vm.network "private_network", ip: "192.168.50.10", virtualbox__intnet: "dns"
+    ns01.vm.hostname = "ns01"
+    ns01.vm.provision "shell", inline: <<-SHELL
+      yum install sshpass -y
+      ssh-keygen -q -t rsa -N "" -f "/vagrant/id_rsa"
+      cp -f /vagrant/id_rsa /home/vagrant/.ssh/
+      chown vagrant:vagrant /home/vagrant/.ssh/id_rsa
+      chmod 0600 /home/vagrant/.ssh/id_rsa
+      mkdir -p /root/.ssh/
+      cp -f /vagrant/id_rsa /root/.ssh/
+      chown root:root /root/.ssh/id_rsa
+      chmod 0600 /root/.ssh/id_rsa
+      ssh-keyscan -t rsa 192.168.50.11 >> /home/vagrant/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 192.168.50.15 >> /home/vagrant/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 192.168.50.25 >> /home/vagrant/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 127.0.0.1 >> /home/vagrant/.ssh/known_hosts 2>/dev/null
+      chown vagrant:vagrant /home/vagrant/.ssh/known_hosts
+      chmod 0600 /home/vagrant/.ssh/known_hosts
+      ssh-keyscan -t rsa 192.168.50.11 >> /root/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 192.168.50.15 >> /root/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 192.168.50.25 >> /root/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 127.0.0.1 >> /root/.ssh/known_hosts 2>/dev/null
+      sshpass -p "vagrant" ssh-copy-id -f -i /vagrant/id_rsa.pub vagrant@192.168.50.11
+      ssh -i /root/.ssh/id_rsa vagrant@192.168.50.11 "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sudo systemctl reload sshd"
+      sshpass -p "vagrant" ssh-copy-id -f -i /vagrant/id_rsa.pub vagrant@192.168.50.25
+      ssh -i /root/.ssh/id_rsa vagrant@192.168.50.25 "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sudo systemctl reload sshd"
+      sshpass -p "vagrant" ssh-copy-id -f -i /vagrant/id_rsa.pub vagrant@192.168.50.15
+      ssh -i /root/.ssh/id_rsa vagrant@192.168.50.15 "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sudo systemctl reload sshd"
+      sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && sudo systemctl reload sshd
+      sshpass -p "vagrant" ssh-copy-id -f -i /vagrant/id_rsa.pub vagrant@127.0.0.1
+      ssh -i /root/.ssh/id_rsa vagrant@127.0.0.1 "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sudo systemctl reload sshd"
+      cp -r /vagrant/provisioning /home/vagrant/
+      cp /vagrant/hosts.yml /home/vagrant/
+      cp /vagrant/ansible.cfg /home/vagrant/
+      yum install curl -y
+      yum install epel-release -y
+      yum install  ansible -y -q
+      cd /home/vagrant/ && sudo ansible-playbook provisioning/playbook.yml
+      SHELL
+
+  end
+
+end
