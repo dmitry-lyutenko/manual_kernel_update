@@ -8,6 +8,7 @@
       - bind
       - bind-utils
       - ntp
+      - libsemanage-python  
 
   - name: copy transferkey to all servers and the client
     copy: src=named.zonetransfer.key dest=/etc/named.zonetransfer.key owner=root group=named mode=0644
@@ -34,6 +35,15 @@
   - name: ensure named is running and enabled
     service: name=named state=restarted enabled=yes
 
+  - name: NetworkManager dns down
+    copy: 
+      dest: /etc/NetworkManager/conf.d/dns.conf
+      content: | 
+         [main]
+         dns=none
+  - name: reload NetworkManager
+    command: systemctl restart NetworkManager
+
 - hosts: ns02
   become: yes
   tasks:
@@ -47,6 +57,21 @@
 
   - name: ensure named is running and enabled
     service: name=named state=restarted enabled=yes
+
+  - name: selinux
+    seboolean:
+            name: named_write_master_zones
+            state: yes
+            persistent: yes
+
+  - name: NetworkManager dns down
+    copy:
+      dest: /etc/NetworkManager/conf.d/dns.conf
+      content: |
+         [main]
+         dns=none
+  - name: reload NetworkManager
+    command: systemctl restart NetworkManager          
     
 - hosts: clients
   become: yes
@@ -57,3 +82,12 @@
     copy: src=rndc.conf dest=/home/vagrant/rndc.conf owner=vagrant group=vagrant mode=0644
   - name: copy motd to the client
     copy: src=client-motd dest=/etc/motd owner=root group=root mode=0644
+
+  - name: NetworkManager dns down
+    copy:
+      dest: /etc/NetworkManager/conf.d/dns.conf
+      content: |
+         [main]
+         dns=none
+  - name: reload NetworkManager
+    command: systemctl restart NetworkManager  

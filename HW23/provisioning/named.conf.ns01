@@ -58,117 +58,114 @@ server 192.168.50.11 {
 };
 
 view "view1" {
-    match-clients { "view1"; };
+	match-clients { "view1"; };
 
-    // root zone
-    zone "." IN {
-	type hint;
-	file "named.ca";
-};
+	// root zone
+	zone "." IN {
+		type hint;
+		file "named.ca";
+	};
 
-   // zones like localhost
-   include "/etc/named.rfc1912.zones";
-   // root's DNSKEY
-   include "/etc/named.root.key";
+	// zones like localhost
+	include "/etc/named.rfc1912.zones";
+	// root DNSKEY
+	include "/etc/named.root.key";
 
-  // lab's zone
-  zone "dns.lab" {
-    type master;
-    allow-transfer { key "zonetransfer.key"; };
-    file "/etc/named/named.dns.lab.view1";
-};
+	// labs dns zone
+	zone "dns.lab" {
+		type master;
+		allow-transfer { key "zonetransfer.key"; };
+		allow-update { key DHCP_UPDATE; };
+		file "/etc/named/named.dns.lab.view1";
+	};
 
-   // lab's zone reverse
-   zone "50.168.192.in-addr.arpa" {
-     type master;
-     allow-transfer { key "zonetransfer.key"; };
-     file "/etc/named/named.dns.lab.rev.view1";
-};
-
-  // lab's new zone
-  zone "newdns.lab" {
-     type master;
-     allow-transfer { key "zonetransfer.key"; };
-     file "/etc/named/named.newdns.lab.view1";
- 
-};
-
+	// labs newdns zone
+	zone "newdns.lab" {
+		type master;
+		allow-transfer { key "zonetransfer.key"; };
+		file "/etc/named/named.newdns.lab.view1";
+	};
+	// labs zone reverse
+	zone "50.168.192.in-addr.arpa" {
+		type master;
+		allow-transfer { key "zonetransfer.key"; };
+		file "/etc/named/named.dns.lab.rev.view1";
+	};
 };
 
 view "view2" {
-    match-clients { "view2"; };
+	match-clients { "view2"; };
 
-   // root zone
-   zone "." IN {
-        type hint;
-        file "named.ca";
-};
+	// root zone
+        zone "." IN {
+                type hint;
+                file "named.ca";
+        };
 
-  // zones like localhost
-  include "/etc/named.rfc1912.zones";
-  // root's DNSKEY
-  include "/etc/named.root.key";
+	// zones like localhost
+        include "/etc/named.rfc1912.zones";
+        // root DNSKEY
+        include "/etc/named.root.key";
 
-   // lab's zone
-   zone "dns.lab" {
-      type master;
-      allow-transfer { key "zonetransfer.key"; };
-      file "/etc/named/named.dns.lab.view2";
-};
+	// labs dns zone
+        zone "dns.lab" {
+                type master;
+                allow-transfer { key "zonetransfer.key"; };
+                file "/etc/named/named.dns.lab.view2";
+	};
 
-// lab's zone reverse
-zone "50.168.192.in-addr.arpa" {
-    type master;
-    allow-transfer { key "zonetransfer.key"; };
-    file "/etc/named/named.dns.lab.rev.view2";
-};
-
+	// labs zone reverse
+        zone "50.168.192.in-addr.arpa" {
+                type master;
+                allow-transfer { key "zonetransfer.key"; };
+                file "/etc/named/named.dns.lab.rev.view2";
+        };
 
 };
 
 view "default" {
-    match-clients {  any; };
+	match-clients { any; };
 
-  // root zone
-  zone "." IN {
-        type hint;
-        file "named.ca";
+	// root zone
+	zone "." IN {
+                type hint;
+                file "named.ca";
+        };
+
+	// zones like localhost
+        include "/etc/named.rfc1912.zones";
+        // root DNSKEY
+        include "/etc/named.root.key";
+
+	// labs dns zone
+        zone "dns.lab" {
+                type master;
+                allow-transfer { key "zonetransfer.key"; };
+                file "/etc/named/named.dns.lab";
+        };
+ 
+	// labs ddns zone
+	zone "ddns.lab" {
+		type master;
+		allow-transfer { key "zonetransfer.key"; };
+		allow-update { key "zonetransfer.key"; };
+		file "/etc/named/named.ddns.lab";
+	};
+
+	// labs newdns zone
+        zone "newdns.lab" {
+                type master;
+                allow-transfer { key "zonetransfer.key"; };
+                file "/etc/named/named.newdns.lab";
+	};
+
+	// labs zone reverse
+        zone "50.168.192.in-addr.arpa" {
+                type master;
+                allow-transfer { key "zonetransfer.key"; };
+                file "/etc/named/named.dns.lab.rev";
+        };
+
 };
 
-  // zones like localhost
-  include "/etc/named.rfc1912.zones";
-  // root's DNSKEY
-  include "/etc/named.root.key";
-
-  // lab's zone
-  zone "dns.lab" {
-    type master;
-    allow-transfer { key "zonetransfer.key"; };
-    file "/etc/named/named.dns.lab";
-};
-
-  // lab's zone reverse
-  zone "50.168.192.in-addr.arpa" {
-    type master;
-    allow-transfer { key "zonetransfer.key"; };
-    file "/etc/named/named.dns.lab.rev";
-};
-
-  // lab's new zone
-  zone "newdns.lab" {
-     type master;
-     allow-transfer { key "zonetransfer.key"; };
-     file "/etc/named/named.newdns.lab";
-};
-
-  //lab's ddns zone
-  zone "ddns.lab" {
-     type master;
-     allow-transfer { key "zonetransfer.key"; };
-     allow-update { key "zonetransfer.key"; };
-     file "/etc/named/named.ddns.lab";
-};
-
-
-};
 

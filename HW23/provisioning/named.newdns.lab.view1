@@ -15,4 +15,4 @@ $ORIGIN newdns.lab.
 ns01            IN      A       192.168.50.10
 ns02            IN      A       192.168.50.11
 www		IN	A 	192.168.50.15
-;www		IN	A	192.168.50.25
+www		IN	A	192.168.50.25

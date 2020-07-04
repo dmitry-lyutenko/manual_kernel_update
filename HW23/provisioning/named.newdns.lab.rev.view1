@@ -1,7 +1,7 @@
 $TTL 3600
 $ORIGIN 50.168.192.in-addr.arpa.
 50.168.192.in-addr.arpa.  IN      SOA     ns01.newdns.lab. root.newdns.lab. (
-                            2406202001 ; serial
+                            2406202002 ; serial
                             3600       ; refresh (1 hour)
                             600        ; retry (10 minutes)
                             86400      ; expire (1 day)
@@ -14,5 +14,5 @@ $ORIGIN 50.168.192.in-addr.arpa.
 ; DNS Servers
 10              IN      PTR     ns01.newdns.lab.
 11              IN      PTR     ns02.newdns.lab.
-15		IN	PTR	www.newdns.lab.
-;25		IN	PTR	www.newdns.lab.
+15.50.168.192.in-addr.arpa.		IN	PTR	www.newdns.lab.
+25.50.168.192.in-addr.arpa.		IN	PTR	www.newdns.lab.
