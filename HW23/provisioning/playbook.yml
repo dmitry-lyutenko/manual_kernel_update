@@ -82,6 +82,8 @@
     copy: src=rndc.conf dest=/home/vagrant/rndc.conf owner=vagrant group=vagrant mode=0644
   - name: copy motd to the client
     copy: src=client-motd dest=/etc/motd owner=root group=root mode=0644
+  - name: install bind utils
+    yum: name=bind-utils state=latest
 
   - name: NetworkManager dns down
     copy:

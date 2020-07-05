@@ -51,11 +51,14 @@ acl "view2" {
     192.168.50.25/32; //client2
 };
 
+key "zonetransfer.key" {
+    algorithm hmac-md5;
+    secret "SB4Db9pJomyKxTNynlAq/g==";
+};
 
-// ZONE TRANSFER WITH TSIG
-include "/etc/named.zonetransfer.key"; 
-server 192.168.50.10 {
-    keys { "zonetransfer.key"; };
+key "zonetransfer2.key" {
+	algorithm hmac-md5;
+	secret "w143iTeLn0Pzi0f6L5oaig==";
 };
 
 view "view1" {
@@ -75,7 +78,7 @@ view "view1" {
 	// labs dns zone
 	zone "dns.lab" {
 		type slave;
-		masters { 192.168.50.10; };
+		masters { 192.168.50.10 key "zonetransfer.key"; };
 		file  "/etc/named/named.dns.lab.view1";
 };
 
@@ -83,14 +86,14 @@ view "view1" {
 	// labs newdns zone
 	zone "newdns.lab" {
 		type slave;
-		masters { 192.168.50.10; };
+		masters { 192.168.50.10 key "zonetransfer.key"; };
 		// file "/etc/named/named.newdns.lab.view1";
 	};
 
 	// labs zone reverse
 	zone "50.168.192.in-addr.arpa" {
 		type slave;
-		masters { 192.168.50.10; };
+		masters { 192.168.50.10 key "zonetransfer.key"; };
 		// file "/etc/named/named.newdns.lab.rev.view1"; 
 	};
 };
@@ -112,57 +115,14 @@ view "view2" {
 	// labs dns zone 	
 	zone "dns.lab" {
 		type slave;
-		masters { 192.168.50.10; };
+		masters { 192.168.50.10 key "zonetransfer2.key"; };
 	};
 
 	// labs zone reverse
         zone "50.168.192.in-addr.arpa" {
                 type slave;
-                masters { 192.168.50.10; };
+                masters { 192.168.50.10 key "zonetransfer2.key"; };
                 // file "/etc/named/named.newdns.lab.rev.view2";
 	};
  
-};
-
-view "default" {
-	match-clients { any; };
-	
-	 // root zone
-        zone "." IN {
-                type hint;
-                file "named.ca";
-        };
-
-	// zones like localhost
-        include "/etc/named.rfc1912.zones";
-        // root DNSKEY
-        include "/etc/named.root.key";
-
-	// labs dns zone
-        zone "dns.lab" {
-                type slave;
-                masters { 192.168.50.10; };
-		file "/etc/named/named.dns.lab";
-	};
-
-	// labs ddns zone
-        zone "ddns.lab" {
-                type slave;
-                masters { 192.168.50.10; };
-                file "/etc/named/named.ddns.lab";
-        };
-
-	// labs newdns zone
-        zone "newdns.lab" {
-                type slave;
-                masters { 192.168.50.10; };
-                file "/etc/named/named.newdns.lab";
-	};
-
-	// labs zone reverse
-        zone "50.168.192.in-addr.arpa" {
-                type slave;
-                masters { 192.168.50.10; };
-                file "/etc/named/named.dns.lab.rev";
-        };
 };
