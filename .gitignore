@@ -1,0 +1,4 @@
+.vagrant/
+packer_cache/
+test/
+*.box
