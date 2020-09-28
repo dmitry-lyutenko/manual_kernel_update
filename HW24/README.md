@@ -44,6 +44,41 @@ Cгененрировать ключ для TLS-аутентификации:
 openvpn --genkey --secret ta.key   
 dh.pem и ta.key также необходимо перенести в /etc/openvpn/server/  
 
+### Создание ключей и сертификатов для клиента  
+
+./easyrsa gen-req vpnclient nopass # В результате выполнения данной команнды получем файл vpnclient.key  
+Аргументы программы easyrsa:   
+gen-req — сгененрировать запрос на выпуск сертификата;   
+vpnclient — описательное имя клиента;   
+nopass — ключ без пароля.  
+
+Импортировать полученный от клиента запрос на выпуск сертификата:  
+./easyrsa import-req pki/reqs/vpnclient.req vpnclient    
+Аргументы программы easyrsa:   
+import-req — импортировать требование;   
+pki/reqs/vpnclient.req — абсолютный путь к файлу требования;   
+vpnclient — описательное имя клиента.  
+Программа напечатает абсолютный путь к импортированному файлу требования:  
+`Existing file at: /root/easy-rsa/pki/reqs/vpnclient.req`
+
+Подписать запрос (выпустить и подписать сертификат):  
+root@intgate:~/easy-rsa# ./easyrsa sign-req client vpnclient  
+
+Аргументы программы easyrsa:   
+sign-req — подписать запрос;   
+client — тип запроса; server или client, соответственно;   
+vpnclient — описательное имя клиента.  
+Потребует ввести yes для подтверждения доверия к запросу, и если при создании ЦС был задан пароль к ключу,   
+то программа ещё и потребует ввести пароль. В заключение напечатает абсолютный путь к файлу подписанного сертификата:  
+`Certificate created at: /root/easy-rsa/pki/issued/vpnclient.crt`  
+Итого на клиентскоую сторону необходимо передать следующие файлы:  
+ca.crt vpnclient.crt vpnclient.key dh.pem ta.key  
+
+
+
+
+
+
 
 
 
