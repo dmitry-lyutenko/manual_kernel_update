@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"C:/Users/Andrey/manual_kernel_update/HW7","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}

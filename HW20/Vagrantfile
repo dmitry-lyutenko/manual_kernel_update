@@ -1,0 +1,108 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+:inetRouter => {
+        :box_name => "centos/6",
+        #:public => {:ip => '10.10.10.1', :adapter => 1},
+        :net => [
+                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                ]
+  },
+  :centralRouter => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                   {ip: '172.16.0.254', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "srv-net"},
+                   {ip: '192.168.255.5', adapter: 4, netmask: "255.255.255.252", virtualbox__intnet: "rt-net"},
+                ]
+  },
+  :inetRouter2 => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.255.6', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "rt-net"},
+                ]
+  },
+
+ :centralServer => {
+        :box_name => "centos/7",
+        :net => [
+                  {ip: '172.16.0.1', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "srv-net"},
+                   
+        ]
+
+  },
+
+
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+    config.vm.define boxname do |box|
+
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+        
+        case boxname.to_s
+        when "inetRouter"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+            ip route add 172.16.0.0/24 via 192.168.255.2 dev eth1
+            ip route add 192.168.255.0/30 via 192.168.255.2 dev eth1
+            ip route add 192.168.255.4/30 via 192.168.255.2 dev eth1
+            iptables-restore < /vagrant/inetRouter
+            sysctl net.ipv4.conf.all.forwarding=1
+            SHELL
+        when "centralRouter"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+            echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            systemctl restart network
+            sysctl net.ipv4.conf.all.forwarding=1
+            SHELL
+        when "inetRouter2" 
+          box.vm.provision "shell", run: "always", inline: <<-SHELL 
+            "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+            echo "GATEWAY=192.168.255.2" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            systemctl restart network
+            iptables-restore < /vagrant/inetRouter2
+            sysctl net.ipv4.conf.all.forwarding=1
+            SHELL
+        when "centralServer"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+            echo "GATEWAY=172.16.0.254" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            systemctl restart network
+            sysctl net.ipv4.conf.all.forwarding=1
+            yum install -y epel-release
+            yum install -y nginx
+            systemctl enable nginx
+            systemctl start nginx
+            SHELL
+        end
+
+      end
+
+  end
+  
+
+end
+

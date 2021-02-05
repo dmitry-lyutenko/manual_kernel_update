@@ -1,0 +1,62 @@
+---
+- hosts: server
+  become: yes
+  tasks:
+  - name: install *==Ovpn==*
+    yum: name=openvpn state=latest
+
+- hosts: server
+  become: yes
+  tasks: 
+  - name: Copy Ovpnconf
+    copy: src=/vagrant/vpnserver/server.conf dest=/etc/openvpn/server.conf owner=root group=root mode=0644
+  - name: Make CCD
+    file: path=/etc/openvpn/ccd state=directory
+  - name: Touch ipp.txt
+    file: path=/etc/openvpn/ipp.txt state=touch
+  - name: Copy diffi
+    copy: src=/vagrant/vpnserver/dh.pem dest=/etc/openvpn/server/dh.pem
+  - name: Copy CA
+    copy: src=/vagrant/vpnserver/ca.crt dest=/etc/openvpn/server/ca.crt
+  - name: Copy TA
+    copy: src=/vagrant/vpnserver/ta.key dest=/etc/openvpn/server/ta.key
+  - name: Copy vpncert
+    copy: src=/vagrant/vpnserver/vpnserver.crt dest=/etc/openvpn/server/vpnserver.crt
+  - name: Copy vpnkey
+    copy: src=/vagrant/vpnserver/vpnserver.key dest=/etc/openvpn/server/vpnserver.key
+
+- hosts: client
+  become: yes
+  tasks:
+  - name: install epel
+    yum: name=epel-release state=latest
+  - name: install *==Ovpn==* client
+    yum: name=openvpn state=latest 
+  - name: Copy client Ovpnconf
+    copy: src=/vagrant/vpnclient/client.conf dest=/etc/openvpn/client.conf owner=root group=root mode=0644 
+  - name: Copy client CA
+    copy: src=/vagrant/vpnclient/ca.crt dest=/etc/openvpn/client/ca.crt
+  - name: Copy client diffi
+    copy: src=/vagrant/vpnclient/dh.pem dest=/etc/openvpn/client/dh.pem
+  - name: Copy client ta
+    copy: src=/vagrant/vpnclient/ta.key dest=/etc/openvpn/client/ta.key
+  - name: Copy client cert
+    copy: src=/vagrant/vpnclient/vpnclient.crt dest=/etc/openvpn/client/vpnclient.crt
+  - name: Copy client key
+    copy: src=/vagrant/vpnclient/vpnclient.key dest=/etc/openvpn/client/vpnclient.key
+
+- hosts: server
+  become: yes
+  tasks: 
+  - name: Start openvpn server
+    service: name=openvpn@server state=started enabled=yes
+
+- hosts: client
+  become: yes
+  tasks:
+  - name: Start openvpn client
+    service: name=openvpn@client state=started enabled=yes
+
+
+      
+      

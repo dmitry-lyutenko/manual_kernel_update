@@ -1,0 +1,9 @@
+[Unit]
+Description=Run eatchlog script every 30 seconds
+
+[Timer]
+OnUnitActiveSec=30
+Unit=watchlog.service
+
+[Install]
+WantedBy=multi-user.target

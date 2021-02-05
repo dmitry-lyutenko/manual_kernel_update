@@ -1,0 +1,96 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+    config.vm.box = "centos/7"
+    config.vm.box_version = "1905.1"
+  
+    config.vm.provider "virtualbox" do |v|
+      v.memory = 256
+      v.cpus = 1
+    end
+  
+    config.vm.define "r2" do |r2|
+      r2.vm.network "private_network", ip: "172.16.1.2", virtualbox__intnet: "link1"
+      r2.vm.network "private_network", ip: "172.16.3.2", virtualbox__intnet: "link3"
+      r2.vm.hostname = "r2"
+      #yum install quagga -y
+      r2.vm.provision "shell", inline: <<-SHELL
+      sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && systemctl reload sshd
+      echo net.ipv4.ip_forward=1 >> /etc/sysctl.d/router.conf
+      echo net.ipv4.conf.all.rp_filter=2 >> /etc/sysctl.d/router.conf
+      echo net.ipv4.conf.all.forwarding=1 >> /etc/sysctl.d/router.conf 
+      systemctl restart network
+      SHELL
+    end
+  
+    config.vm.define "r3" do |r3|
+      r3.vm.network "private_network", ip: "172.16.2.3", virtualbox__intnet: "link2"
+      r3.vm.network "private_network", ip: "172.16.3.3", virtualbox__intnet: "link3"
+      r3.vm.hostname = "r3"
+      #yum install quagga -y
+      r3.vm.provision "shell", inline: <<-SHELL
+      sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && systemctl reload sshd
+      echo net.ipv4.conf.all.forwarding=1 >> /etc/sysctl.d/router.conf
+      echo net.ipv4.conf.all.rp_filter=2 >> /etc/sysctl.d/router.conf
+      echo net.ipv4.ip_forward=1 >> /etc/sysctl.d/router.conf
+      systemctl restart network
+      SHELL
+    end
+
+     config.vm.define "r1" do |r1|
+      r1.vm.network "private_network", ip: "172.16.1.1", virtualbox__intnet: "link1"
+      r1.vm.network "private_network", ip: "172.16.2.1", virtualbox__intnet: "link2"
+      r1.vm.hostname = "r1"
+      r1.vm.provision "shell", inline: <<-SHELL
+      yum install sshpass -y
+      ssh-keygen -q -t rsa -N "" -f "/vagrant/id_rsa"
+      cp -f /vagrant/id_rsa /home/vagrant/.ssh/
+      chown vagrant:vagrant /home/vagrant/.ssh/id_rsa
+      chmod 0600 /home/vagrant/.ssh/id_rsa
+      mkdir -p /root/.ssh/    
+      cp -f /vagrant/id_rsa /root/.ssh/
+      chown root:root /root/.ssh/id_rsa
+      chmod 0600 /root/.ssh/id_rsa
+      ssh-keyscan -t rsa 172.16.1.2 >> /home/vagrant/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 172.16.2.3 >> /home/vagrant/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 127.0.0.1 >> /home/vagrant/.ssh/known_hosts 2>/dev/null
+      chown vagrant:vagrant /home/vagrant/.ssh/known_hosts
+      chmod 0600 /home/vagrant/.ssh/known_hosts
+      ssh-keyscan -t rsa 172.16.1.2 >> /root/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 172.16.2.3 >> /root/.ssh/known_hosts 2>/dev/null
+      ssh-keyscan -t rsa 127.0.0.1 >> /root/.ssh/known_hosts 2>/dev/null
+      sshpass -p "vagrant" ssh-copy-id -f -i /vagrant/id_rsa.pub vagrant@172.16.1.2
+      ssh -i /root/.ssh/id_rsa vagrant@172.16.1.2 "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sudo systemctl reload sshd"
+      sshpass -p "vagrant" ssh-copy-id -f -i /vagrant/id_rsa.pub vagrant@172.16.2.3
+      ssh -i /root/.ssh/id_rsa vagrant@172.16.2.3 "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sudo systemctl reload sshd"
+      sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && sudo systemctl reload sshd
+      sshpass -p "vagrant" ssh-copy-id -f -i /vagrant/id_rsa.pub vagrant@127.0.0.1
+      ssh -i /root/.ssh/id_rsa vagrant@127.0.0.1 "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sudo systemctl reload sshd"
+      cp -r /vagrant/Ansible /home/vagrant/ 
+      cp /vagrant/ifcfg-lo.2r1 /home/vagrant/
+      cp /vagrant/ifcfg-lo.2r2 /home/vagrant/
+      cp /vagrant/ifcfg-lo.2r3 /home/vagrant/
+      cp /vagrant/play.yml /home/vagrant/  
+      yum install curl -y
+      yum install epel-release -y
+      yum install  ansible -y -q 
+      echo net.ipv4.conf.all.forwarding=1 >> /etc/sysctl.d/router.conf
+      echo net.ipv4.conf.all.rp_filter=2 >> /etc/sysctl.d/router.conf
+      echo net.ipv4.ip_forward=1 >> /etc/sysctl.d/router.conf
+      cd /home/vagrant/ && sudo ansible-playbook -i Ansible/ play.yml
+      SHELL
+    end
+  
+    #config.vm.provision "ansible" do |ansible|
+    #  ansible.verbose = "v"
+    #  ansible.playbook = "start.yml"
+    #  ansible.become = "true"
+    #end
+  
+    #config.vm.provision "shell", run: "always", inline: <<-SHELL
+    #  ip route delete default 2>&1 >/dev/null || true
+    #  systemctl restart network
+    #  SHELL
+  
+  end
